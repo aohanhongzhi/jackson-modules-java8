@@ -27,6 +27,8 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.type.WritableTypeId;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Serializer for Java 8 temporal {@link LocalDateTime}s.
@@ -36,6 +38,8 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
  */
 public class LocalDateTimeSerializer extends JSR310FormattedSerializerBase<LocalDateTime>
 {
+    private static final Logger log = LoggerFactory.getLogger(LocalDateTimeSerializer.class);
+
     private static final long serialVersionUID = 1L;
 
     public static final LocalDateTimeSerializer INSTANCE = new LocalDateTimeSerializer();
@@ -66,7 +70,10 @@ public class LocalDateTimeSerializer extends JSR310FormattedSerializerBase<Local
     public void serialize(LocalDateTime value, JsonGenerator g, SerializerProvider provider)
         throws IOException
     {
-        if (useTimestamp(provider)) {
+        boolean useTimestamp = useTimestamp(provider);
+        if (useTimestamp) {
+            // 下面这个序列化的时间是一个数组
+            log.info("下面这个序列化的时间是一个数组 {}",value);
             g.writeStartArray();
             _serializeAsArrayContents(value, g, provider);
             g.writeEndArray();
@@ -74,8 +81,11 @@ public class LocalDateTimeSerializer extends JSR310FormattedSerializerBase<Local
             DateTimeFormatter dtf = _formatter;
             if (dtf == null) {
                 dtf = _defaultFormatter();
+                log.warn("No formatter， 使用默认序列化器 {}，{}",dtf,this);
             }
-            g.writeString(value.format(dtf));
+            String format = value.format(dtf);
+            log.info("{} 序列化后的时间格式 {}",this,format);
+            g.writeString(format);
         }
     }
 

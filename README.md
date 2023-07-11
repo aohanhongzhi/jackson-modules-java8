@@ -1,3 +1,13 @@
+## local development and debug
+
+```shell
+mvn source:jar install  -Dmaven.test.skip=true
+```
+
+version 2.16.2-SNAPSHOT
+
+jackson-datatype-jsr310-2.16.2-SNAPSHOT
+
 ## Overview
 
 This is a multi-module umbrella project for [Jackson](../../../jackson)

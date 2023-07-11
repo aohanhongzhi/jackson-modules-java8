@@ -43,6 +43,9 @@ abstract class JSR310FormattedSerializerBase<T>
     extends JSR310SerializerBase<T>
     implements ContextualSerializer
 {
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(JSR310FormattedSerializerBase.class);
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -85,6 +88,11 @@ abstract class JSR310FormattedSerializerBase<T>
         _useTimestamp = null;
         _useNanoseconds = null;
         _shape = null;
+        if (formatter!=null){
+            log.info("formatter {}",formatter);
+        }else{
+            log.info("formatter is null {}",formatter);
+        }
         _formatter = formatter;
     }
     
@@ -101,6 +109,11 @@ abstract class JSR310FormattedSerializerBase<T>
         super(base.handledType());
         _useTimestamp = useTimestamp;
         _useNanoseconds = useNanoseconds;
+        if (dtf!=null){
+            log.info("formatter {}",dtf);
+        }else{
+            log.info("formatter is null {}",dtf);
+        }
         _formatter = dtf;
         _shape = shape;
     }
@@ -139,6 +152,11 @@ abstract class JSR310FormattedSerializerBase<T>
                 useTimestamp = Boolean.TRUE;
             } else {
                 useTimestamp = (shape == JsonFormat.Shape.STRING) ? Boolean.FALSE : null;
+            }
+            if (_formatter!=null){
+                log.info("formatter {}, {}",_formatter,this);
+            }else{
+                log.info("formatter is null {},{}",_formatter,this);
             }
             DateTimeFormatter dtf = _formatter;
 
@@ -228,8 +246,9 @@ abstract class JSR310FormattedSerializerBase<T>
             }
         }
         // assume that explicit formatter definition implies use of textual format
-        return (_formatter == null) && (provider != null)
+        boolean result =(_formatter == null) && (provider != null)
                 && provider.isEnabled(getTimestampsFeature());
+        return result;
     }
 
     protected boolean _useTimestampExplicitOnly(SerializerProvider provider) {
